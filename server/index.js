@@ -1,4 +1,4 @@
-process.loadEnvFile();
+import 'dotenv/config';
 import express, { json } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
