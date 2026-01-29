@@ -76,9 +76,21 @@ const ActivityLogDialog: React.FC<ActivityLogDialogProps> = ({
         }
     };
 
-    const formatDetails = (details: Record<string, any>) => {
+    const formatDetails = (details: Record<string, any>, action: string) => {
         const entries = Object.entries(details);
         if (entries.length === 0) return 'No details';
+
+        if (action === 'update') {
+            // Format as "field: oldValue → newValue"
+            return entries.map(([key, value]) => {
+                if (value && typeof value === 'object' && 'from' in value && 'to' in value) {
+                    const fromVal = value.from || '(empty)';
+                    const toVal = value.to || '(empty)';
+                    return `${key}: ${fromVal} → ${toVal}`;
+                }
+                return `${key}: ${value}`;
+            }).join(', ');
+        }
 
         return entries.map(([key, value]) => `${key}: ${value}`).join(', ');
     };
@@ -117,7 +129,7 @@ const ActivityLogDialog: React.FC<ActivityLogDialogProps> = ({
                                     <ListItemText
                                         secondary={
                                             <Typography variant="body2" color="text.secondary">
-                                                {formatDetails(activity.details)}
+                                                {formatDetails(activity.details, activity.action)}
                                             </Typography>
                                         }
                                     />

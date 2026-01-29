@@ -110,27 +110,39 @@ export const updateContact = async (req, res) => {
             return res.status(401).json({ msg: 'Not authorized' });
         }
 
+        // Store original contact for activity logging comparison
+        const originalContact = { ...contact.toObject() };
+
         contact = await Contact.findByIdAndUpdate(
             req.params.id,
             { $set: contactFields },
             { new: true, runValidators: true }
         );
 
-        const activityDetails = {};
-        for (const [key, value] of Object.entries(contactFields)) {
-            if (key !== 'modified_by') {
-                activityDetails[key] = value;
+        // Track what changed for activity log
+        const changedFields = {};
+        const fieldsToCheck = ['name', 'email', 'phone', 'company', 'status', 'notes'];
+
+        for (const field of fieldsToCheck) {
+            // Check if the field was provided in the request body and if its value has actually changed
+            if (contactFields[field] !== undefined && originalContact[field] !== contactFields[field]) {
+                changedFields[field] = {
+                    from: originalContact[field],
+                    to: contactFields[field]
+                };
             }
         }
 
-        // Log activity
-        await ActivityLog.create({
-            action: 'update',
-            entity: 'Contact',
-            entity_id: contact._id,
-            details: activityDetails,
-            created_by: req.user.id
-        });
+        // Log activity only if something changed
+        if (Object.keys(changedFields).length > 0) {
+            await ActivityLog.create({
+                action: 'update',
+                entity: 'Contact',
+                entity_id: contact._id,
+                details: changedFields,
+                created_by: req.user.id
+            });
+        }
 
         res.json(contact);
     } catch (err) {
