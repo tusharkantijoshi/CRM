@@ -30,3 +30,8 @@ export const updateContact = async (id: string, data: Partial<ContactFormData>):
 export const deleteContact = async (id: string): Promise<void> => {
     await apiClient.delete(`/contacts/${id}`);
 };
+
+export const getContactActivity = async (id: string): Promise<any[]> => {
+    const response = await apiClient.get<any[]>(`/contacts/${id}/activity`);
+    return response.data;
+};

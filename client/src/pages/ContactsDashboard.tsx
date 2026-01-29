@@ -19,11 +19,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import HistoryIcon from '@mui/icons-material/History';
 import { debounce } from 'lodash';
 import { type Contact, type ContactFormData } from '../types/contacts.types';
 
 import * as contactService from '../api/contacts.api';
 import ContactFormDialog from '../components/ContactFormDialog';
+import ActivityLogDialog from '../components/ActivityLogDialog';
 
 const ContactsDashboard: React.FC = () => {
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -34,6 +36,11 @@ const ContactsDashboard: React.FC = () => {
     // Dialog state
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+
+    // Activity log dialog state
+    const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
+    const [activityContactId, setActivityContactId] = useState<string | null>(null);
+    const [activityContactName, setActivityContactName] = useState('');
 
     // Pagination state
     const [page, setPage] = useState(1);
@@ -120,6 +127,12 @@ const ContactsDashboard: React.FC = () => {
     const openEditDialog = (contact: Contact) => {
         setSelectedContact(contact);
         setIsDialogOpen(true);
+    };
+
+    const openActivityDialog = (contact: Contact) => {
+        setActivityContactId(contact._id);
+        setActivityContactName(contact.name);
+        setIsActivityDialogOpen(true);
     };
 
     const getStatusColor = (status: string) => {
@@ -229,6 +242,9 @@ const ContactsDashboard: React.FC = () => {
                                         )}
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+                                        <IconButton size="small" onClick={() => openActivityDialog(contact)} color="info">
+                                            <HistoryIcon />
+                                        </IconButton>
                                         <IconButton size="small" onClick={() => openEditDialog(contact)} color="primary">
                                             <EditIcon />
                                         </IconButton>
@@ -259,6 +275,13 @@ const ContactsDashboard: React.FC = () => {
                 onClose={() => setIsDialogOpen(false)}
                 onSubmit={selectedContact ? handleUpdateContact : handleCreateContact}
                 contact={selectedContact}
+            />
+
+            <ActivityLogDialog
+                open={isActivityDialogOpen}
+                onClose={() => setIsActivityDialogOpen(false)}
+                contactId={activityContactId}
+                contactName={activityContactName}
             />
         </Box>
     );

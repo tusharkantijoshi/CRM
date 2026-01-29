@@ -170,3 +170,29 @@ export const deleteContact = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+// @desc    Get contact activity
+// @route   GET /api/contacts/:id/activity
+// @access  Private
+export const getContactActivity = async (req, res) => {
+    try {
+        const contact = await Contact.findById(req.params.id);
+
+        if (!contact) return res.status(404).json({ msg: 'Contact not found' });
+
+        // Make sure user owns contact
+        if (contact.created_by.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'Not authorized' });
+        }
+
+        const activities = await ActivityLog.find({
+            entity_id: req.params.id,
+            entity: 'Contact'
+        }).sort({ created_at: -1 });
+
+        res.json(activities);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
