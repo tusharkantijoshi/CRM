@@ -1,4 +1,5 @@
 import Contact from '../../db/models/Contact.js';
+import ActivityLog from '../../db/models/ActivityLog.js';
 
 // @desc    Get all contacts (with search & filter)
 // @route   GET /api/contacts
@@ -65,6 +66,16 @@ export const createContact = async (req, res) => {
         });
 
         const contact = await newContact.save();
+
+        // Log activity
+        await ActivityLog.create({
+            action: 'create',
+            entity: 'Contact',
+            entity_id: contact._id,
+            details: { name: contact.name, email: contact.email },
+            created_by: req.user.id
+        });
+
         res.json(contact);
     } catch (err) {
         console.error(err.message);
@@ -105,6 +116,22 @@ export const updateContact = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        const activityDetails = {};
+        for (const [key, value] of Object.entries(contactFields)) {
+            if (key !== 'modified_by') {
+                activityDetails[key] = value;
+            }
+        }
+
+        // Log activity
+        await ActivityLog.create({
+            action: 'update',
+            entity: 'Contact',
+            entity_id: contact._id,
+            details: activityDetails,
+            created_by: req.user.id
+        });
+
         res.json(contact);
     } catch (err) {
         console.error(err.message);
@@ -127,6 +154,15 @@ export const deleteContact = async (req, res) => {
         }
 
         await Contact.findByIdAndDelete(req.params.id);
+
+        // Log activity
+        await ActivityLog.create({
+            action: 'delete',
+            entity: 'Contact',
+            entity_id: req.params.id,
+            details: { name: contact.name }, // Log name for reference
+            created_by: req.user.id
+        });
 
         res.json({ msg: 'Contact removed' });
     } catch (err) {
