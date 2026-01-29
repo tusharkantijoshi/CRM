@@ -41,6 +41,7 @@ const Login: React.FC = () => {
 
             // Store token (implementation dependent, usually local storage or context)
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('role', response.data.user.role);
 
             console.log('Login successful:', response.data);
             // Navigate to home or dashboard

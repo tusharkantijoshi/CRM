@@ -8,7 +8,7 @@ const router = Router();
 // Register Route
 router.post('/register', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
         const normalizedEmail = email.toLowerCase();
 
         // Check if user exists
@@ -21,10 +21,11 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create user
+        // Create user (role defaults to 'user' if not provided)
         const user = await User.create({
             email: normalizedEmail,
             password: hashedPassword,
+            role: role || 'user',
         });
 
         res.status(201).json({ message: 'User registered successfully', userId: user._id });
@@ -52,15 +53,15 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // Generate Token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        // Generate Token with role
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
             expiresIn: '30d',
         });
 
         res.status(200).json({
             message: 'Login successful',
             token,
-            user: { id: user._id, email: user.email },
+            user: { id: user._id, email: user.email, role: user.role },
         });
     } catch (error) {
         console.error('Login Error:', error);

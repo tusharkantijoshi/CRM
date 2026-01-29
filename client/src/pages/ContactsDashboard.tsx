@@ -47,6 +47,10 @@ const ContactsDashboard: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const limit = 12; // Grid layout 4x3 or 3x4 works well
 
+    // Role-based access control
+    const userRole = localStorage.getItem('role') || 'user';
+    const isAdmin = userRole === 'admin';
+
     // Fetch contacts with an optional query
     const fetchContacts = async (query: string = '', pageNum: number = 1) => {
         try {
@@ -167,14 +171,16 @@ const ContactsDashboard: React.FC = () => {
                             startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
                         }}
                     />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={openCreateDialog}
-                    >
-                        Add Contact
-                    </Button>
+                    {isAdmin && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            onClick={openCreateDialog}
+                        >
+                            Add Contact
+                        </Button>
+                    )}
                 </Box>
             </Box>
 
@@ -189,14 +195,16 @@ const ContactsDashboard: React.FC = () => {
                     <Typography variant="h6" color="text.secondary">
                         No contacts found.
                     </Typography>
-                    <Button
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        onClick={openCreateDialog}
-                        sx={{ mt: 2 }}
-                    >
-                        Create your first contact
-                    </Button>
+                    {isAdmin && (
+                        <Button
+                            variant="outlined"
+                            startIcon={<AddIcon />}
+                            onClick={openCreateDialog}
+                            sx={{ mt: 2 }}
+                        >
+                            Create your first contact
+                        </Button>
+                    )}
                 </Paper>
             ) : (
                 <>
@@ -242,15 +250,19 @@ const ContactsDashboard: React.FC = () => {
                                         )}
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
-                                        <IconButton size="small" onClick={() => openActivityDialog(contact)} color="info">
-                                            <HistoryIcon />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={() => openEditDialog(contact)} color="primary">
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={() => handleDeleteContact(contact._id)} color="error">
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        {isAdmin && (
+                                            <>
+                                                <IconButton size="small" onClick={() => openActivityDialog(contact)} color="info">
+                                                    <HistoryIcon />
+                                                </IconButton>
+                                                <IconButton size="small" onClick={() => openEditDialog(contact)} color="primary">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton size="small" onClick={() => handleDeleteContact(contact._id)} color="error">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </>
+                                        )}
                                     </CardActions>
                                 </Card>
                             </Grid>

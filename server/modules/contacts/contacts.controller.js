@@ -11,8 +11,8 @@ export const getContacts = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const { search, status } = req.query;
-        // Filter by created_by (user's contacts)
-        let query = { created_by: req.user.id };
+        // All users can see all contacts
+        let query = {};
 
         if (search) {
             query.$or = [

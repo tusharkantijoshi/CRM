@@ -28,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) =>
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         window.location.href = '/login';
     };
 
