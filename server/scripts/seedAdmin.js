@@ -25,7 +25,7 @@ const seedAdmin = async () => {
                 email: normalizedEmail,
                 password: passwordHash,
                 created_by: `99`,
-                updated_by: `99`,
+                modified_by: `99`,
             });
             console.log('Admin user created successfully.');
         }

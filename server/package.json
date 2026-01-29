@@ -7,8 +7,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
+    "seed": "node --env-file=.env scripts/seedAdmin.js",
+    "start": "npm run seed && node index.js",
+    "dev": "npm run seed && node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

@@ -6,8 +6,7 @@ const baseSchema = {
         default: Date.now,
     },
     created_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
         default: null,
     },
     modified_at: {
@@ -15,8 +14,7 @@ const baseSchema = {
         default: Date.now,
     },
     modified_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
         default: null,
     },
     deleted: {
@@ -24,8 +22,7 @@ const baseSchema = {
         default: false,
     },
     deleted_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
         default: null,
     },
 };
