@@ -1,12 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../db/models/User.js';
 
-// Load env vars manually since we are not using the main entry point
-// In Node 20+, we can use process.loadEnvFile() if running with --env-file or just rely on it being there?
-// The user's index.js uses process.loadEnvFile(). I will assume I can run this script with node --env-file=.env server/scripts/seedAdmin.js 
-// OR simpler: I'll just use dotenv logic or the same process.loadEnvFile() provided by newer Node versions if available.
-// Given the user context says "The USER's OS version is mac", it might be recent. I'll stick to process.loadEnvFile() as seen in index.js.
-
 try {
     process.loadEnvFile();
 } catch (e) {
