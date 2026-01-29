@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -7,8 +6,10 @@ import {
     Button,
     TextField,
     MenuItem,
-    Box
+    Box,
+    Alert
 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactSchema, type Contact, type ContactFormData, ContactStatus } from '../types/contacts.types';
@@ -38,8 +39,12 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({ open, onClose, on
         }
     });
 
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
     useEffect(() => {
+        setSubmitError(null);
         if (contact) {
+            // ... (reset logic)
             reset({
                 name: contact.name,
                 email: contact.email || '',
@@ -62,10 +67,12 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({ open, onClose, on
 
     const handleFormSubmit = async (data: ContactFormData) => {
         try {
+            setSubmitError(null);
             await onSubmit(data);
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to submit contact:', error);
+            setSubmitError(error.response?.data?.msg || error.message || 'Failed to submit contact');
         }
     };
 
@@ -74,6 +81,7 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({ open, onClose, on
             <DialogTitle>{contact ? 'Edit Contact' : 'Add New Contact'}</DialogTitle>
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <DialogContent>
+                    {submitError && <Alert severity="error" sx={{ mb: 2 }}>{submitError}</Alert>}
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <Controller
                             name="name"

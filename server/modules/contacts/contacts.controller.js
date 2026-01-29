@@ -82,12 +82,12 @@ export const updateContact = async (req, res) => {
     const contactFields = {
         modified_by: req.user.id
     };
-    if (name) contactFields.name = name;
-    if (email) contactFields.email = email;
-    if (phone) contactFields.phone = phone;
-    if (company) contactFields.company = company;
-    if (status) contactFields.status = status;
-    if (notes) contactFields.notes = notes;
+    if (name !== undefined) contactFields.name = name;
+    if (email !== undefined) contactFields.email = email;
+    if (phone !== undefined) contactFields.phone = phone;
+    if (company !== undefined) contactFields.company = company;
+    if (status !== undefined) contactFields.status = status;
+    if (notes !== undefined) contactFields.notes = notes;
 
     try {
         let contact = await Contact.findById(req.params.id);
@@ -102,7 +102,7 @@ export const updateContact = async (req, res) => {
         contact = await Contact.findByIdAndUpdate(
             req.params.id,
             { $set: contactFields },
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         res.json(contact);
