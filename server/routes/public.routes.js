@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import User from '../db/models/User.js';
 
 const router = Router();
@@ -51,7 +52,16 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        res.status(200).json({ message: 'Login successful', user: { id: user._id, email: user.email } });
+        // Generate Token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '30d',
+        });
+
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: { id: user._id, email: user.email },
+        });
     } catch (error) {
         console.error('Login Error:', error);
         res.status(500).json({ message: 'Server error' });
