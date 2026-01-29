@@ -7,7 +7,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "seed": "node --env-file=.env scripts/seedDefaultUsers.js",
+    "seed": "node scripts/seedDefaultUsers.js",
     "start": "npm run seed && node index.js",
     "dev": "npm run seed && node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
