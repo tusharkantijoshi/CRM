@@ -1,0 +1,14 @@
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+
+const PrivateRoute: React.FC = () => {
+    // Check for authentication token
+    // In a real app, you might want to validate the token or use a context
+    const token = localStorage.getItem('token');
+
+    // If authorized, return an outlet that will render child elements
+    // If not, return element that will navigate to login page
+    return token ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+export default PrivateRoute;
