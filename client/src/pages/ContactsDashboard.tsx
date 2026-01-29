@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Typography,
     Button,
@@ -18,6 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import { debounce } from 'lodash';
 import { type Contact, type ContactFormData } from '../types/contacts.types';
 
 import * as contactService from '../api/contacts.api';
@@ -33,10 +34,11 @@ const ContactsDashboard: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
-    const fetchContacts = async () => {
+    // Fetch contacts with an optional query
+    const fetchContacts = async (query: string = '') => {
         try {
             setLoading(true);
-            const data = await contactService.getContacts(search);
+            const data = await contactService.getContacts(query);
             setContacts(data);
             setError('');
         } catch (err: any) {
@@ -47,17 +49,31 @@ const ContactsDashboard: React.FC = () => {
         }
     };
 
+    // Initial fetch on mount
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            fetchContacts();
-        }, 500);
-        return () => clearTimeout(timeoutId);
-    }, [search]);
+        fetchContacts('');
+    }, []);
+
+    // Create a memoized debounced search function
+    const debouncedFetch = useCallback(
+        debounce((query: string) => {
+            fetchContacts(query);
+        }, 500),
+        []
+    );
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+        setSearch(query);
+        debouncedFetch(query);
+    };
 
     const handleCreateContact = async (data: ContactFormData) => {
         try {
             await contactService.createContact(data);
-            fetchContacts();
+            // Refresh with current search term (or empty to see new contact if it matches)
+            // Ideally we might clear search or just refetch with current search
+            fetchContacts(search);
         } catch (err: any) {
             console.error('Failed to create contact:', err);
             throw err;
@@ -68,7 +84,7 @@ const ContactsDashboard: React.FC = () => {
         if (!selectedContact) return;
         try {
             await contactService.updateContact(selectedContact._id, data);
-            fetchContacts();
+            fetchContacts(search);
             setSelectedContact(null);
         } catch (err: any) {
             console.error('Failed to update contact:', err);
@@ -80,7 +96,7 @@ const ContactsDashboard: React.FC = () => {
         if (window.confirm('Are you sure you want to delete this contact?')) {
             try {
                 await contactService.deleteContact(id);
-                fetchContacts();
+                fetchContacts(search);
             } catch (err: any) {
                 console.error('Failed to delete contact:', err);
                 alert('Failed to delete contact');
@@ -120,7 +136,7 @@ const ContactsDashboard: React.FC = () => {
                         variant="outlined"
                         size="small"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={handleSearchChange}
                         sx={{ bgcolor: 'background.paper' }}
                         InputProps={{
                             startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
