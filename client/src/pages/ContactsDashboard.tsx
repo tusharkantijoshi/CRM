@@ -22,7 +22,6 @@ import { type Contact, type ContactFormData } from '../types/contacts.types';
 
 import * as contactService from '../api/contacts.api';
 import ContactFormDialog from '../components/ContactFormDialog';
-import Header from '../components/Header';
 
 const ContactsDashboard: React.FC = () => {
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -109,113 +108,110 @@ const ContactsDashboard: React.FC = () => {
     };
 
     return (
-        <Box sx={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Header title="Contacts">
-                <TextField
-                    placeholder="Search..."
-                    variant="outlined"
-                    size="small"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    sx={{
-                        bgcolor: 'background.paper',
-                        borderRadius: 1,
-                        mr: 2,
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { border: 'none' },
-                        }
-                    }}
-                    InputProps={{
-                        startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
-                    }}
-                />
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<AddIcon />}
-                    onClick={openCreateDialog}
-                >
-                    Add Contact
-                </Button>
-            </Header>
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Typography variant="h4" component="h1" fontWeight="bold">
+                    Contacts
+                </Typography>
 
-            <Box sx={{ p: 3, flexGrow: 1, overflow: 'auto', bgcolor: 'background.default' }}>
-                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-
-                {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                        <CircularProgress />
-                    </Box>
-                ) : contacts.length === 0 ? (
-                    <Paper sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography variant="h6" color="text.secondary">
-                            No contacts found.
-                        </Typography>
-                        <Button
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={openCreateDialog}
-                            sx={{ mt: 2 }}
-                        >
-                            Create your first contact
-                        </Button>
-                    </Paper>
-                ) : (
-                    <Grid container spacing={3}>
-                        {contacts.map((contact) => (
-                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={contact._id}>
-                                <Card elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.3s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 } }}>
-                                    <CardContent sx={{ flexGrow: 1 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'flex-start' }}>
-                                            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                                                {contact.name}
-                                            </Typography>
-                                            <Chip
-                                                label={contact.status}
-                                                color={getStatusColor(contact.status)}
-                                                size="small"
-                                                variant="outlined"
-                                            />
-                                        </Box>
-                                        <Typography color="text.secondary" gutterBottom sx={{ mb: 2 }}>
-                                            {contact.company || 'No Company'}
-                                        </Typography>
-
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                            {contact.email && (
-                                                <Typography variant="body2" color="text.primary">
-                                                    {contact.email}
-                                                </Typography>
-                                            )}
-                                            {contact.phone && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {contact.phone}
-                                                </Typography>
-                                            )}
-                                        </Box>
-
-                                        {contact.notes && (
-                                            <Box sx={{ mt: 2, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
-                                                <Typography variant="caption" sx={{ fontStyle: 'italic', color: 'text.secondary', display: 'block' }}>
-                                                    {contact.notes}
-                                                </Typography>
-                                            </Box>
-                                        )}
-                                    </CardContent>
-                                    <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
-                                        <IconButton size="small" onClick={() => openEditDialog(contact)} color="primary">
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={() => handleDeleteContact(contact._id)} color="error">
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
-                )}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <TextField
+                        placeholder="Search contacts..."
+                        variant="outlined"
+                        size="small"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        sx={{ bgcolor: 'background.paper' }}
+                        InputProps={{
+                            startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
+                        }}
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={openCreateDialog}
+                    >
+                        Add Contact
+                    </Button>
+                </Box>
             </Box>
+
+            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <CircularProgress />
+                </Box>
+            ) : contacts.length === 0 ? (
+                <Paper sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h6" color="text.secondary">
+                        No contacts found.
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        startIcon={<AddIcon />}
+                        onClick={openCreateDialog}
+                        sx={{ mt: 2 }}
+                    >
+                        Create your first contact
+                    </Button>
+                </Paper>
+            ) : (
+                <Grid container spacing={3}>
+                    {contacts.map((contact) => (
+                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={contact._id}>
+                            <Card elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.3s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 } }}>
+                                <CardContent sx={{ flexGrow: 1 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'flex-start' }}>
+                                        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                                            {contact.name}
+                                        </Typography>
+                                        <Chip
+                                            label={contact.status}
+                                            color={getStatusColor(contact.status)}
+                                            size="small"
+                                            variant="outlined"
+                                        />
+                                    </Box>
+                                    <Typography color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                                        {contact.company || 'No Company'}
+                                    </Typography>
+
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                        {contact.email && (
+                                            <Typography variant="body2" color="text.primary">
+                                                {contact.email}
+                                            </Typography>
+                                        )}
+                                        {contact.phone && (
+                                            <Typography variant="body2" color="text.secondary">
+                                                {contact.phone}
+                                            </Typography>
+                                        )}
+                                    </Box>
+
+                                    {contact.notes && (
+                                        <Box sx={{ mt: 2, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
+                                            <Typography variant="caption" sx={{ fontStyle: 'italic', color: 'text.secondary', display: 'block' }}>
+                                                {contact.notes}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </CardContent>
+                                <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+                                    <IconButton size="small" onClick={() => openEditDialog(contact)} color="primary">
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton size="small" onClick={() => handleDeleteContact(contact._id)} color="error">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
 
             <ContactFormDialog
                 open={isDialogOpen}
