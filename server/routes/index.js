@@ -5,6 +5,6 @@ import privateRoutes from './private.routes.js';
 const router = Router();
 
 router.use('/public', publicRoutes);
-router.use('/private', privateRoutes);
+router.use('/', privateRoutes);
 
 export default router;

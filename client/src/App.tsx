@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
+import ContactsDashboard from './pages/ContactsDashboard';
 import './App.css';
 
 function App() {
@@ -12,16 +13,8 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
-          <Route path="/" element={
-            <div className="App">
-              <h1>Welcome to Osmium Energy</h1>
-              <p>You are logged in!</p>
-              <button onClick={() => {
-                localStorage.removeItem('token');
-                window.location.reload();
-              }}>Logout</button>
-            </div>
-          } />
+          <Route path="/dashboard" element={<ContactsDashboard />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
         {/* Redirect unknown routes to home (which will redirect to login if not auth) */}

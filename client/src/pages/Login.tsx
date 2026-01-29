@@ -44,7 +44,7 @@ const Login: React.FC = () => {
 
             console.log('Login successful:', response.data);
             // Navigate to home or dashboard
-            navigate('/');
+            navigate('/dashboard');
 
         } catch (error: any) {
             console.error('Login error:', error);
