@@ -11,7 +11,7 @@ export type ContactStatus = typeof ContactStatus[keyof typeof ContactStatus];
 export const contactSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
-    phone: z.string().optional(),
+    phone: z.string().regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number').optional().or(z.literal('')),
     company: z.string().optional(),
     status: z.nativeEnum(ContactStatus),
     notes: z.string().optional()
