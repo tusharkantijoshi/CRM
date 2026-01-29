@@ -112,9 +112,7 @@ The server will:
 - Seed default admin and user accounts
 - Start on port 3000 (or your configured PORT)
 
-**Default User Accounts:**
-- Admin: `admin@osmiumenergy.com` / `Admin@123`
-- User: `user@osmiumenergy.com` / `Admin@123`
+> **Note:** Default user accounts are created automatically on first run. Contact your administrator for credentials.
 
 ### 3. Client Setup
 
