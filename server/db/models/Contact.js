@@ -29,8 +29,6 @@ const ContactSchema = new mongoose.Schema({
         type: String
     },
     ...baseSchema
-}, {
-    timestamps: true
 });
 
 const Contact = mongoose.model('Contact', ContactSchema);
