@@ -1,11 +1,14 @@
 process.loadEnvFile();
 import express, { json } from 'express';
 import cors from 'cors';
+import { connectDB } from './db/connection.js';
 
 import healthRoutes from './modules/health/health.routes.js';
 import routes from './routes/index.js';
 
 const app = express();
+// Connect to database
+connectDB();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
