@@ -73,6 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem('token');
         localStorage.removeItem('email');
         localStorage.removeItem('role');
+        window.location.href = '/login';
     };
 
     const isAdmin = user?.role === 'admin';
