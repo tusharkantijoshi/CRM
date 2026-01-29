@@ -14,6 +14,7 @@ import {
 import apiClient from '../api/client';
 import axios from 'axios'; // Keep axios import for isAxiosError
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -25,6 +26,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 const Login: React.FC = () => {
     const [serverError, setServerError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const {
         register,
@@ -39,9 +41,11 @@ const Login: React.FC = () => {
             setServerError(null);
             const response = await apiClient.post('/public/login', data);
 
-            // Store token (implementation dependent, usually local storage or context)
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('role', response.data.user.role);
+            // Use auth context to set user and store token
+            login(response.data.token, {
+                email: response.data.user.email,
+                role: response.data.user.role
+            });
 
             console.log('Login successful:', response.data);
             // Navigate to home or dashboard

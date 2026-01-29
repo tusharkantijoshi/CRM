@@ -26,6 +26,7 @@ import { type Contact, type ContactFormData } from '../types/contacts.types';
 import * as contactService from '../api/contacts.api';
 import ContactFormDialog from '../components/ContactFormDialog';
 import ActivityLogDialog from '../components/ActivityLogDialog';
+import { useAuth } from '../context/AuthContext';
 
 const ContactsDashboard: React.FC = () => {
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -47,9 +48,8 @@ const ContactsDashboard: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const limit = 12; // Grid layout 4x3 or 3x4 works well
 
-    // Role-based access control
-    const userRole = localStorage.getItem('role') || 'user';
-    const isAdmin = userRole === 'admin';
+    // Role-based access control from context
+    const { isAdmin } = useAuth();
 
     // Fetch contacts with an optional query
     const fetchContacts = async (query: string = '', pageNum: number = 1) => {

@@ -9,6 +9,7 @@ import {
     Box
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
     title?: string;
@@ -17,6 +18,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { user, logout } = useAuth();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -27,8 +29,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) =>
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
+        logout();
         window.location.href = '/login';
     };
 
@@ -45,7 +46,12 @@ const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) =>
                 </Box>
 
                 {/* User Menu */}
-                <div>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {user?.email && (
+                        <Typography variant="body2" color="inherit">
+                            {user.email}
+                        </Typography>
+                    )}
                     <IconButton
                         size="large"
                         aria-label="account of current user"
@@ -73,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) =>
                     >
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                     </Menu>
-                </div>
+                </Box>
             </Toolbar>
         </AppBar>
     );
