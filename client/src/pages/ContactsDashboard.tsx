@@ -153,20 +153,29 @@ const ContactsDashboard: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography variant="h4" component="h1" fontWeight="bold">
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h4" component="h1" fontWeight="bold" sx={{ mb: 2, fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
                     Contacts
                 </Typography>
 
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: 2,
+                    alignItems: { xs: 'stretch', sm: 'center' }
+                }}>
                     <TextField
                         placeholder="Search contacts..."
                         variant="outlined"
                         size="small"
                         value={search}
                         onChange={handleSearchChange}
-                        sx={{ bgcolor: 'background.paper' }}
+                        sx={{
+                            bgcolor: 'background.paper',
+                            flexGrow: { xs: 1, sm: 0 },
+                            minWidth: { sm: '250px' }
+                        }}
                         InputProps={{
                             startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
                         }}
@@ -177,6 +186,7 @@ const ContactsDashboard: React.FC = () => {
                             color="primary"
                             startIcon={<AddIcon />}
                             onClick={openCreateDialog}
+                            sx={{ width: { xs: '100%', sm: 'auto' } }}
                         >
                             Add Contact
                         </Button>
