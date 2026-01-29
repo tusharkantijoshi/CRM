@@ -5,6 +5,7 @@ import theme from './theme';
 import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
 import ContactsDashboard from './pages/ContactsDashboard';
+import NotFound from './pages/NotFound';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
 
@@ -25,7 +26,7 @@ function App() {
             </Route>
 
             {/* Redirect unknown routes to home (which will redirect to login if not auth) */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </ThemeProvider>
