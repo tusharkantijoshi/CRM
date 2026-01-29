@@ -25,3 +25,10 @@ export interface Contact extends ContactFormData {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface PaginatedContactsResponse {
+    contacts: Contact[];
+    total: number;
+    page: number;
+    totalPages: number;
+}

@@ -5,6 +5,10 @@ import Contact from '../../db/models/Contact.js';
 // @access  Private
 export const getContacts = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         const { search, status } = req.query;
         // Filter by created_by (user's contacts)
         let query = { created_by: req.user.id };
@@ -23,8 +27,19 @@ export const getContacts = async (req, res) => {
             }
         }
 
-        const contacts = await Contact.find(query).sort({ createdAt: -1 });
-        res.json(contacts);
+        const contacts = await Contact.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Contact.countDocuments(query);
+
+        res.json({
+            contacts,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

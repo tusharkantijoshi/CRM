@@ -1,12 +1,19 @@
 import apiClient from './client';
-import { type Contact, type ContactFormData } from '../types/contacts.types';
+import { type Contact, type ContactFormData, type PaginatedContactsResponse } from '../types/contacts.types';
 
-export const getContacts = async (search?: string, status?: string): Promise<Contact[]> => {
+export const getContacts = async (
+    search?: string,
+    status?: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<PaginatedContactsResponse> => {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (status) params.append('status', status);
+    params.append('page', page.toString());
+    params.append('limit', limit.toString());
 
-    const response = await apiClient.get<Contact[]>(`/contacts?${params.toString()}`);
+    const response = await apiClient.get<PaginatedContactsResponse>(`/contacts?${params.toString()}`);
     return response.data;
 };
 
