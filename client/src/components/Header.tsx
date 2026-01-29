@@ -7,6 +7,7 @@ import {
     Box
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -16,10 +17,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
-        window.location.href = '/login';
+        navigate('/login', { replace: true });
     };
 
     return (
