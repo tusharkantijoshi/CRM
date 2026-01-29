@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     AppBar,
     Toolbar,
     Typography,
-    IconButton,
-    Menu,
-    MenuItem,
+    Button,
     Box
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -17,16 +15,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { user, logout } = useAuth();
-
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const handleLogout = () => {
         logout();
@@ -52,33 +41,14 @@ const Header: React.FC<HeaderProps> = ({ title = 'Osmium Energy', children }) =>
                             {user.email}
                         </Typography>
                     )}
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleMenu}
+                    <AccountCircle sx={{ color: 'inherit', fontSize: 32 }} />
+                    <Button
                         color="inherit"
+                        onClick={handleLogout}
+                        sx={{ ml: 1 }}
                     >
-                        <AccountCircle />
-                    </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                    >
-                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                    </Menu>
+                        Logout
+                    </Button>
                 </Box>
             </Toolbar>
         </AppBar>
