@@ -50,7 +50,7 @@ const Login: React.FC = () => {
       console.log("Login successful:", response.data);
       // Navigate to home or dashboard
       navigate("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login error:", error);
       if (axios.isAxiosError(error) && error.response) {
         setServerError(error.response.data.message || "Login failed");

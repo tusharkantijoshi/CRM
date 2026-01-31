@@ -1,4 +1,5 @@
 import {
+  type ActivityLog,
   type Contact,
   type ContactFormData,
   type PaginatedContactsResponse,
@@ -42,7 +43,11 @@ export const deleteContact = async (id: string): Promise<void> => {
   await apiClient.delete(`/contacts/${id}`);
 };
 
-export const getContactActivity = async (id: string): Promise<any[]> => {
-  const response = await apiClient.get<any[]>(`/contacts/${id}/activity`);
+export const getContactActivity = async (
+  id: string,
+): Promise<ActivityLog[]> => {
+  const response = await apiClient.get<ActivityLog[]>(
+    `/contacts/${id}/activity`,
+  );
   return response.data;
 };

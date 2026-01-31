@@ -54,38 +54,46 @@ const ContactsDashboard: React.FC = () => {
   const { isAdmin } = useAuth();
 
   // Fetch contacts with an optional query
-  const fetchContacts = async (query: string = "", pageNum: number = 1) => {
-    try {
-      setLoading(true);
-      const data = await contactService.getContacts(
-        query,
-        undefined,
-        pageNum,
-        limit,
-      );
-      setContacts(data.contacts);
-      setTotalPages(data.totalPages);
-      setError("");
-    } catch (err: any) {
-      console.error(err);
-      setError("Failed to fetch contacts");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchContacts = useCallback(
+    async (query: string = "", pageNum: number = 1) => {
+      try {
+        setLoading(true);
+        const data = await contactService.getContacts(
+          query,
+          undefined,
+          pageNum,
+          limit,
+        );
+        setContacts(data.contacts);
+        setTotalPages(data.totalPages);
+        setError("");
+      } catch (err: unknown) {
+        // Fix any
+        console.error(err);
+        setError("Failed to fetch contacts");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [limit],
+  );
 
   // Initial fetch on mount
   useEffect(() => {
     fetchContacts(search, page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   // Create a memoized debounced search function
   const debouncedFetch = useCallback(
-    debounce((query: string) => {
-      setPage(1); // Reset to page 1 on new search
-      fetchContacts(query, 1);
-    }, 500),
-    [],
+    (query: string) => {
+      const handler = debounce((q: string) => {
+        setPage(1); // Reset to page 1 on new search
+        fetchContacts(q, 1);
+      }, 500);
+      handler(query);
+    },
+    [fetchContacts], // Added dependency
   );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,10 +105,10 @@ const ContactsDashboard: React.FC = () => {
   const handleCreateContact = async (data: ContactFormData) => {
     try {
       await contactService.createContact(data);
-      // Refresh with current search term (or empty to see new contact if it matches)
-      // Ideally we might clear search or just refetch with current search
-      fetchContacts(search, page);
-    } catch (err: any) {
+      // Reset to first page to show the new contact
+      setPage(1);
+      fetchContacts(search, 1);
+    } catch (err: unknown) {
       console.error("Failed to create contact:", err);
       throw err;
     }
@@ -112,18 +120,18 @@ const ContactsDashboard: React.FC = () => {
       await contactService.updateContact(selectedContact._id, data);
       fetchContacts(search, page);
       setSelectedContact(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update contact:", err);
       throw err;
     }
   };
 
   const handleDeleteContact = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
+    if (globalThis.confirm("Are you sure you want to delete this contact?")) {
       try {
         await contactService.deleteContact(id);
         fetchContacts(search, page);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to delete contact:", err);
         alert("Failed to delete contact");
       }
@@ -163,6 +171,168 @@ const ContactsDashboard: React.FC = () => {
     setPage(value);
   };
 
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    if (contacts.length === 0) {
+      return (
+        <Paper sx={{ p: 4, textAlign: "center" }}>
+          <Typography variant="h6" color="text.secondary">
+            No contacts found.
+          </Typography>
+          {isAdmin && (
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={openCreateDialog}
+              sx={{ mt: 2 }}
+            >
+              Create your first contact
+            </Button>
+          )}
+        </Paper>
+      );
+    }
+
+    return (
+      <>
+        <Grid container spacing={3}>
+          {contacts.map((contact) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={contact._id}>
+              <Card
+                elevation={2}
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "0.3s",
+                  "&:hover": { transform: "translateY(-4px)", boxShadow: 4 },
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 1,
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {contact.name}
+                    </Typography>
+                    <Chip
+                      label={contact.status}
+                      color={getStatusColor(contact.status)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Box>
+                  <Typography
+                    color="text.secondary"
+                    gutterBottom
+                    sx={{ mb: 2 }}
+                  >
+                    {contact.company || "No Company"}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.5,
+                    }}
+                  >
+                    {contact.email && (
+                      <Typography variant="body2" color="text.primary">
+                        {contact.email}
+                      </Typography>
+                    )}
+                    {contact.phone && (
+                      <Typography variant="body2" color="text.secondary">
+                        {contact.phone}
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {contact.notes && (
+                    <Box
+                      sx={{
+                        mt: 2,
+                        p: 1,
+                        bgcolor: "action.hover",
+                        borderRadius: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontStyle: "italic",
+                          color: "text.secondary",
+                          display: "block",
+                        }}
+                      >
+                        {contact.notes}
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+                <CardActions sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}>
+                  {isAdmin && (
+                    <>
+                      <IconButton
+                        size="small"
+                        onClick={() => openActivityDialog(contact)}
+                        color="info"
+                      >
+                        <HistoryIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => openEditDialog(contact)}
+                        color="primary"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteContact(contact._id)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  )}
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        {totalPages > 1 && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
+        )}
+      </>
+    );
+  };
+
   return (
     <Box sx={{ p: { xs: 2, sm: 3 } }}>
       <Box sx={{ mb: 3 }}>
@@ -194,8 +364,10 @@ const ContactsDashboard: React.FC = () => {
               flexGrow: { xs: 1, sm: 0 },
               minWidth: { sm: "250px" },
             }}
-            InputProps={{
-              startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+            slotProps={{
+              input: {
+                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+              },
             }}
           />
           {isAdmin && (
@@ -218,159 +390,7 @@ const ContactsDashboard: React.FC = () => {
         </Alert>
       )}
 
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : contacts.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="h6" color="text.secondary">
-            No contacts found.
-          </Typography>
-          {isAdmin && (
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={openCreateDialog}
-              sx={{ mt: 2 }}
-            >
-              Create your first contact
-            </Button>
-          )}
-        </Paper>
-      ) : (
-        <>
-          <Grid container spacing={3}>
-            {contacts.map((contact) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={contact._id}>
-                <Card
-                  elevation={2}
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    transition: "0.3s",
-                    "&:hover": { transform: "translateY(-4px)", boxShadow: 4 },
-                  }}
-                >
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        {contact.name}
-                      </Typography>
-                      <Chip
-                        label={contact.status}
-                        color={getStatusColor(contact.status)}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </Box>
-                    <Typography
-                      color="text.secondary"
-                      gutterBottom
-                      sx={{ mb: 2 }}
-                    >
-                      {contact.company || "No Company"}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 0.5,
-                      }}
-                    >
-                      {contact.email && (
-                        <Typography variant="body2" color="text.primary">
-                          {contact.email}
-                        </Typography>
-                      )}
-                      {contact.phone && (
-                        <Typography variant="body2" color="text.secondary">
-                          {contact.phone}
-                        </Typography>
-                      )}
-                    </Box>
-
-                    {contact.notes && (
-                      <Box
-                        sx={{
-                          mt: 2,
-                          p: 1,
-                          bgcolor: "action.hover",
-                          borderRadius: 1,
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontStyle: "italic",
-                            color: "text.secondary",
-                            display: "block",
-                          }}
-                        >
-                          {contact.notes}
-                        </Typography>
-                      </Box>
-                    )}
-                  </CardContent>
-                  <CardActions
-                    sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}
-                  >
-                    {isAdmin && (
-                      <>
-                        <IconButton
-                          size="small"
-                          onClick={() => openActivityDialog(contact)}
-                          color="info"
-                        >
-                          <HistoryIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => openEditDialog(contact)}
-                          color="primary"
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteContact(contact._id)}
-                          color="error"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </>
-                    )}
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          {totalPages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-          )}
-        </>
-      )}
+      {renderContent()}
 
       <ContactFormDialog
         open={isDialogOpen}

@@ -36,3 +36,13 @@ export interface PaginatedContactsResponse {
   page: number;
   totalPages: number;
 }
+
+export interface ActivityLog {
+  _id: string;
+  action: "create" | "update" | "delete";
+  entity: string;
+  entity_id: string;
+  details: Record<string, unknown>;
+  created_at: string;
+  created_by: string;
+}

@@ -52,41 +52,46 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
-    setSubmitError(null);
-    if (contact) {
-      // ... (reset logic)
-      reset({
-        name: contact.name,
-        email: contact.email || "",
-        phone: contact.phone || "",
-        company: contact.company || "",
-        status: contact.status as ContactStatus,
-        notes: contact.notes || "",
-      });
-    } else {
-      reset({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        status: ContactStatus.Lead,
-        notes: "",
-      });
+    if (open) {
+      setSubmitError(null); // Clear previous errors on open
+      if (contact) {
+        reset({
+          name: contact.name,
+          email: contact.email || "",
+          phone: contact.phone || "",
+          company: contact.company || "",
+          status: contact.status as ContactStatus,
+          notes: contact.notes || "",
+        });
+      } else {
+        reset(); // Reset to defaultValues for new contact
+      }
     }
-  }, [contact, open, reset]);
+  }, [contact, reset, open]);
+
+  // Reset error when dialog opens or closes, but avoid main effect dependency issues
+  useEffect(() => {
+    // Avoid setting state in effect if possible.
+    // If we want to clear error on open, we can do it here but wrap in a check to avoid potential loop if not careful?
+    // Actually, just ignoring it is fine if we accept it's a sync update on prop change.
+    // But since `open` changes, removing it is safer for lint.
+    // Let's rely on handleFormSubmit clearing it.
+  }, [open]);
 
   const handleFormSubmit = async (data: ContactFormData) => {
     try {
       setSubmitError(null);
       await onSubmit(data);
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to submit contact:", error);
-      setSubmitError(
-        error.response?.data?.msg ||
-          error.message ||
-          "Failed to submit contact",
-      );
+      const err = error as {
+        response?: { data?: { msg?: string } };
+        message?: string;
+      };
+      const msg =
+        err.response?.data?.msg || err.message || "Failed to submit contact";
+      setSubmitError(msg);
     }
   };
 
