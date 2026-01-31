@@ -1,13 +1,18 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from './theme';
-import Login from './pages/Login';
-import PrivateRoute from './components/PrivateRoute';
-import ContactsDashboard from './pages/ContactsDashboard';
-import NotFound from './pages/NotFound';
-import { AuthProvider } from './context/AuthContext';
-import './App.css';
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
+import "./App.css";
+import PrivateRoute from "./components/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
+import ContactsDashboard from "./pages/ContactsDashboard";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
+import theme from "./theme";
 
 function App() {
   return (
