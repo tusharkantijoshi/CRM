@@ -3,7 +3,7 @@ import User from "../db/models/User.js";
 
 try {
   process.loadEnvFile();
-} catch (e) {
+} catch {
   console.log(
     "Could not load .env file via process.loadEnvFile(), assuming variables are present or using default.",
   );

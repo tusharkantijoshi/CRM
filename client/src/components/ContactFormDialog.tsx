@@ -53,7 +53,6 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
 
   useEffect(() => {
     if (open) {
-      setSubmitError(null); // Clear previous errors on open
       if (contact) {
         reset({
           name: contact.name,
@@ -95,8 +94,13 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
     }
   };
 
+  const handleClose = () => {
+    setSubmitError(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{contact ? "Edit Contact" : "Add New Contact"}</DialogTitle>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <DialogContent>
@@ -196,7 +200,7 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="inherit">
+          <Button onClick={handleClose} color="inherit">
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={isSubmitting}>
