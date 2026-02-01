@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios"; // Keep axios import for isAxiosError
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,7 +18,7 @@ import apiClient from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -31,16 +32,15 @@ const Login: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormInputs) => {
-    try {
-      setServerError(null);
-      const response = await apiClient.post("/public/login", data);
-
+  const mutation = useMutation({
+    mutationFn: (data: LoginFormInputs) =>
+      apiClient.post("/public/login", data),
+    onSuccess: (response) => {
       // Use auth context to set user and store token
       login(response.data.token, {
         email: response.data.user.email,
@@ -50,15 +50,23 @@ const Login: React.FC = () => {
       console.log("Login successful:", response.data);
       // Navigate to home or dashboard
       navigate("/dashboard");
-    } catch (error: unknown) {
+    },
+    onError: (error) => {
       console.error("Login error:", error);
       if (axios.isAxiosError(error) && error.response) {
         setServerError(error.response.data.message || "Login failed");
       } else {
         setServerError("An unexpected error occurred");
       }
-    }
+    },
+  });
+
+  const onSubmit = (data: LoginFormInputs) => {
+    setServerError(null);
+    mutation.mutate(data);
   };
+
+  const isSubmitting = mutation.isPending;
 
   return (
     <Container maxWidth="xs">

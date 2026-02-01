@@ -20,19 +20,22 @@ import {
   Typography,
 } from "@mui/material";
 import { debounce } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type Contact, type ContactFormData } from "../types/contacts.types";
 
-import * as contactService from "../api/contacts.api";
 import ActivityLogDialog from "../components/ActivityLogDialog";
 import ContactFormDialog from "../components/ContactFormDialog";
 import { useAuth } from "../context/AuthContext";
+import {
+  useContacts,
+  useCreateContact,
+  useDeleteContact,
+  useUpdateContact,
+} from "../hooks/useContacts";
 
 const ContactsDashboard: React.FC = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -47,90 +50,65 @@ const ContactsDashboard: React.FC = () => {
 
   // Pagination state
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const limit = 12; // Grid layout 4x3 or 3x4 works well
 
   // Role-based access control from context
   const { isAdmin } = useAuth();
 
-  // Fetch contacts with an optional query
-  const fetchContacts = useCallback(
-    async (query: string = "", pageNum: number = 1) => {
-      try {
-        setLoading(true);
-        const data = await contactService.getContacts(
-          query,
-          undefined,
-          pageNum,
-          limit,
-        );
-        setContacts(data.contacts);
-        setTotalPages(data.totalPages);
-        setError("");
-      } catch (err: unknown) {
-        // Fix any
-        console.error(err);
-        setError("Failed to fetch contacts");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [limit],
-  );
+  // React Query Hooks
+  const {
+    data: contactsData,
+    isLoading: loading,
+    isError: isContactsError,
+    error: contactsError,
+  } = useContacts(debouncedSearch, undefined, page, limit);
 
-  // Initial fetch on mount
-  useEffect(() => {
-    fetchContacts(search, page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  const createMutation = useCreateContact();
+  const updateMutation = useUpdateContact();
+  const deleteMutation = useDeleteContact();
 
-  // Create a memoized debounced search function
-  const debouncedFetch = useCallback(
-    (query: string) => {
-      const handler = debounce((q: string) => {
-        setPage(1); // Reset to page 1 on new search
-        fetchContacts(q, 1);
-      }, 500);
-      handler(query);
-    },
-    [fetchContacts], // Added dependency
-  );
+  const contacts = contactsData?.contacts || [];
+  const totalPages = contactsData?.totalPages || 1;
+  const error = isContactsError
+    ? (contactsError as Error).message || "Failed to fetch contacts"
+    : "";
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearch(query);
-    debouncedFetch(query);
+    const handler = debounce((q: string) => {
+      setPage(1);
+      setDebouncedSearch(q);
+    }, 500);
+    handler(query);
   };
 
   const handleCreateContact = async (data: ContactFormData) => {
     try {
-      await contactService.createContact(data);
-      // Reset to first page to show the new contact
-      setPage(1);
-      fetchContacts(search, 1);
+      await createMutation.mutateAsync(data);
+      setPage(1); // Reset to first page to show the new contact
+      setIsDialogOpen(false);
     } catch (err: unknown) {
       console.error("Failed to create contact:", err);
-      throw err;
+      // Optional: show error toast
     }
   };
 
   const handleUpdateContact = async (data: ContactFormData) => {
     if (!selectedContact) return;
     try {
-      await contactService.updateContact(selectedContact._id, data);
-      fetchContacts(search, page);
+      await updateMutation.mutateAsync({ id: selectedContact._id, data });
+      setIsDialogOpen(false);
       setSelectedContact(null);
     } catch (err: unknown) {
       console.error("Failed to update contact:", err);
-      throw err;
     }
   };
 
   const handleDeleteContact = async (id: string) => {
     if (globalThis.confirm("Are you sure you want to delete this contact?")) {
       try {
-        await contactService.deleteContact(id);
-        fetchContacts(search, page);
+        await deleteMutation.mutateAsync(id);
       } catch (err: unknown) {
         console.error("Failed to delete contact:", err);
         alert("Failed to delete contact");
