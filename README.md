@@ -5,6 +5,7 @@ A full-stack web application for contact management with role-based access contr
 ## Features
 
 ### Authentication & Authorization
+
 - **Secure Authentication**: JWT-based authentication with bcrypt password hashing
 - **Role-Based Access Control (RBAC)**: Two user roles with distinct permissions:
   - **Admin**: Full access to create, update, delete contacts and view activity logs
@@ -13,6 +14,7 @@ A full-stack web application for contact management with role-based access contr
 - **Protected Routes**: Client-side route protection with role-based UI rendering
 
 ### Contact Management
+
 - **CRUD Operations**: Complete contact lifecycle management (admin only)
 - **Search & Filter**: Real-time search across contact name, email, phone, and company
 - **Pagination**: Efficient data loading with customizable page size
@@ -20,6 +22,7 @@ A full-stack web application for contact management with role-based access contr
 - **Contact Details**: Name, email, phone, company, status, and notes
 
 ### Activity Logging
+
 - **Comprehensive Audit Trail**: Track all contact creation, updates, and deletions
 - **Detailed Change Tracking**: For updates, stores both old and new values
 - **User Attribution**: Every action linked to the user who performed it
@@ -27,6 +30,7 @@ A full-stack web application for contact management with role-based access contr
 - **Activity Viewer**: Admin-only dialog to view contact history
 
 ### User Experience
+
 - **Responsive Design**: Fully responsive UI for mobile, tablet, and desktop
 - **Material-UI**: Modern, accessible components with consistent design
 - **Real-time Validation**: Form validation with Zod schemas and React Hook Form
@@ -35,6 +39,7 @@ A full-stack web application for contact management with role-based access contr
 - **404 Page**: Custom not found page with navigation options
 
 ### Security
+
 - **Helmet**: Security headers middleware for Express
 - **CORS**: Configured cross-origin resource sharing
 - **Input Validation**: Server and client-side validation
@@ -44,16 +49,18 @@ A full-stack web application for contact management with role-based access contr
 ## Tech Stack
 
 ### Client
+
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **UI Library**: Material-UI (MUI)
 - **Routing**: React Router v6
 - **Forms**: React Hook Form + Zod validation
 - **HTTP Client**: Axios
-- **State Management**: React Context API
+- **State Management**: React Context API + TanStack Query
 - **Utilities**: Lodash, date-fns, jwt-decode
 
 ### Server
+
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
@@ -70,6 +77,7 @@ A full-stack web application for contact management with role-based access contr
 ## Getting Started
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd osmiumenergy
@@ -78,21 +86,25 @@ cd osmiumenergy
 ### 2. Server Setup
 
 Navigate to the server directory:
+
 ```bash
 cd server
 ```
 
 Install dependencies:
+
 ```bash
 npm install
 ```
 
 Create environment file:
+
 ```bash
 cp .env.example .env
 ```
 
 Configure environment variables in `.env`:
+
 ```env
 MONGO_URI=mongodb://localhost:27017/osmiumenergy
 # Or use MongoDB Atlas:
@@ -103,11 +115,13 @@ PORT=3000
 ```
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
 
 The server will:
+
 - Connect to MongoDB
 - Seed default admin and user accounts
 - Start on port 3000 (or your configured PORT)
@@ -117,26 +131,31 @@ The server will:
 ### 3. Client Setup
 
 Navigate to the client directory:
+
 ```bash
 cd client
 ```
 
 Install dependencies:
+
 ```bash
 npm install
 ```
 
 Create environment file:
+
 ```bash
 cp .env.example .env
 ```
 
 Configure environment variables in `.env`:
+
 ```env
 VITE_API_URL=http://localhost:3000/api
 ```
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -174,6 +193,7 @@ osmiumenergy/
 ### Authentication Endpoints
 
 #### Register
+
 ```http
 POST /api/public/register
 Content-Type: application/json
@@ -186,6 +206,7 @@ Content-Type: application/json
 ```
 
 #### Login
+
 ```http
 POST /api/public/login
 Content-Type: application/json
@@ -211,16 +232,19 @@ Response:
 All contact endpoints require `Authorization: Bearer <token>` header.
 
 #### Get All Contacts
+
 ```http
 GET /api/contacts?page=1&limit=12&search=keyword
 ```
 
 #### Get Contact by ID
+
 ```http
 GET /api/contacts/:id
 ```
 
 #### Create Contact (Admin Only)
+
 ```http
 POST /api/contacts
 Content-Type: application/json
@@ -236,6 +260,7 @@ Content-Type: application/json
 ```
 
 #### Update Contact (Admin Only)
+
 ```http
 PUT /api/contacts/:id
 Content-Type: application/json
@@ -247,11 +272,13 @@ Content-Type: application/json
 ```
 
 #### Delete Contact (Admin Only)
+
 ```http
 DELETE /api/contacts/:id
 ```
 
 #### Get Contact Activity (Admin Only)
+
 ```http
 GET /api/contacts/:id/activity
 ```
@@ -259,11 +286,13 @@ GET /api/contacts/:id/activity
 ## NPM Scripts
 
 ### Server
+
 - `npm run dev` - Start development server with auto-reload and database seeding
 - `npm start` - Start production server with database seeding
 - `npm run seed` - Seed default users (admin and user)
 
 ### Client
+
 - `npm run dev` - Start Vite development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
@@ -272,6 +301,7 @@ GET /api/contacts/:id/activity
 ## User Roles & Permissions
 
 ### Admin Role
+
 - ✅ Create new contacts
 - ✅ Edit existing contacts
 - ✅ Delete contacts
@@ -280,6 +310,7 @@ GET /api/contacts/:id/activity
 - ✅ Search and filter contacts
 
 ### User Role
+
 - ❌ Cannot create contacts
 - ❌ Cannot edit contacts
 - ❌ Cannot delete contacts
@@ -290,12 +321,14 @@ GET /api/contacts/:id/activity
 ## Responsive Breakpoints
 
 The application is fully responsive using Material-UI breakpoints:
+
 - **xs** (< 600px): Mobile devices
 - **sm** (600px - 900px): Tablets (portrait)
 - **md** (900px - 1200px): Tablets (landscape) / Small laptops
 - **lg** (1200px+): Desktops
 
 ### Mobile Optimizations
+
 - Vertical stacking of UI elements
 - Full-width buttons for touch targets
 - Hidden email in header to save space
@@ -305,6 +338,7 @@ The application is fully responsive using Material-UI breakpoints:
 ## Environment Variables
 
 ### Server (.env)
+
 ```env
 MONGO_URI=<mongodb-connection-string>
 JWT_SECRET=<your-secret-key>
@@ -312,6 +346,7 @@ PORT=3000
 ```
 
 ### Client (.env)
+
 ```env
 VITE_API_URL=http://localhost:3000/api
 ```
@@ -327,16 +362,19 @@ VITE_API_URL=http://localhost:3000/api
 ## Troubleshooting
 
 ### Server won't start
+
 - Ensure MongoDB is running
 - Check `MONGO_URI` in `.env`
 - Verify port 3000 is not already in use
 
 ### Client can't connect to server
+
 - Ensure server is running on port 3000
 - Check `VITE_API_URL` in client `.env`
 - Verify CORS is properly configured
 
 ### Authentication issues
+
 - Clear localStorage in browser
 - Check JWT_SECRET matches between sessions
 - Verify token hasn't expired (30 day expiry)

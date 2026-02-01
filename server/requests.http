@@ -1,0 +1,110 @@
+@baseUrl = http://localhost:3000
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Public Section
+
+# Register a new user
+POST {{baseUrl}}/api/public/register
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "password123",
+    "role": "user"
+}
+
+### Login as Admin
+# @name adminLogin
+POST {{baseUrl}}/api/public/login
+Content-Type: application/json
+
+{
+    "email": "testadmin@email.com",
+    "password": "password123"
+}
+
+### Login as Test User
+# @name userLogin
+POST {{baseUrl}}/api/public/login
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "password123"
+}
+
+### Private Section
+
+# Get All Users (Admin Token)
+GET {{baseUrl}}/api/private/users
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+# Get All Products (User Token) - Example if implemented
+# GET {{baseUrl}}/api/private/products
+# Authorization: Bearer {{userLogin.response.body.token}}
+
+# Get All Users (No Token - Should Fail 401)
+GET {{baseUrl}}/api/private/users
+
+### Contacts API
+
+# Add Contact
+# @name addContact
+POST {{baseUrl}}/api/private/contacts
+Content-Type: application/json
+Authorization: Bearer {{userLogin.response.body.token}}
+
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "123-456-7890",
+    "company": "Example Corp",
+    "status": "Lead",
+    "notes": "Interested in solar panels"
+}
+
+# Add Another Contact
+POST {{baseUrl}}/api/private/contacts
+Content-Type: application/json
+Authorization: Bearer {{userLogin.response.body.token}}
+
+{
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "phone": "987-654-3210",
+    "company": "Another Inc",
+    "status": "Customer",
+    "notes": "Existing customer"
+}
+
+# Get All Contacts
+GET {{baseUrl}}/api/private/contacts
+Authorization: Bearer {{userLogin.response.body.token}}
+
+# Search Contacts (by name)
+GET {{baseUrl}}/api/private/contacts?search=John
+Authorization: Bearer {{userLogin.response.body.token}}
+
+# Filter Contacts (by status)
+GET {{baseUrl}}/api/private/contacts?status=Customer
+Authorization: Bearer {{userLogin.response.body.token}}
+
+# Update Contact
+PUT {{baseUrl}}/api/private/contacts/{{addContact.response.body._id}}
+Content-Type: application/json
+Authorization: Bearer {{userLogin.response.body.token}}
+
+{
+    "status": "Prospect",
+    "notes": "Updated status to Prospect"
+}
+
+# Delete Contact
+DELETE {{baseUrl}}/api/private/contacts/{{addContact.response.body._id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+# Get Contact Activity
+GET {{baseUrl}}/api/private/contacts/{{addContact.response.body._id}}/activity
+Authorization: Bearer {{adminLogin.response.body.token}}
