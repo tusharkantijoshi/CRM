@@ -24,7 +24,7 @@ jobs:
         with:
           context: ./server
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }} /osmium-server:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/osmium-server:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -51,7 +51,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           # These files must exist in your root directory
-          source: "docker-compose.yml,nginx.conf"
+          source: "docker-compose.yml"
           target: "~/osmiumenergy"
 
       # STEP 2: Tell EC2 to pull and restart
