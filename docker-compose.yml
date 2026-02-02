@@ -1,5 +1,6 @@
 services:
   server:
+    container_name: osmium-backend
     image: ${DOCKER_USERNAME}/osmium-server:latest
     restart: always
     environment:
@@ -11,6 +12,7 @@ services:
       - osmium-network
 
   client:
+    container_name: osmium-frontend
     image: ${DOCKER_USERNAME}/osmium-client:latest
     restart: always
     ports:
