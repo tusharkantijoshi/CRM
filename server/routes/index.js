@@ -4,7 +4,7 @@ import publicRoutes from "./public.routes.js";
 
 const router = Router();
 
-router.use("/public", publicRoutes);
+router.use("/", publicRoutes);
 router.use("/", privateRoutes);
 
 export default router;

@@ -38,8 +38,7 @@ const Login: React.FC = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: LoginFormInputs) =>
-      apiClient.post("/public/login", data),
+    mutationFn: (data: LoginFormInputs) => apiClient.post("/login", data),
     onSuccess: (response) => {
       // Use auth context to set user and store token
       login(response.data.token, {
