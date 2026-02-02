@@ -24,6 +24,8 @@ jobs:
         with:
           context: ./server
           push: true
+          # Build for both standard and AWS Graviton (ARM)
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/osmium-server:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -33,6 +35,8 @@ jobs:
         with:
           context: ./client
           push: true
+          # Build for both standard and AWS Graviton (ARM)
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/osmium-client:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
