@@ -1,0 +1,25 @@
+services:
+  server:
+    image: ${DOCKER_USERNAME}/osmium-server:latest
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - osmium-network
+
+  client:
+    image: ${DOCKER_USERNAME}/osmium-client:latest
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - osmium-network
+
+networks:
+  osmium-network:
+    driver: bridge
