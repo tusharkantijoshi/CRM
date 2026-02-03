@@ -1,4 +1,4 @@
-# Osmium Energy - Contact Management System
+# CRM - Contact Management System
 
 A full-stack web application for contact management with role-based access control, built with the MERN stack and modern development practices.
 
@@ -73,6 +73,7 @@ A full-stack web application for contact management with role-based access contr
 - Node.js (v18+ recommended)
 - MongoDB (Local instance or MongoDB Atlas)
 - npm or yarn package manager
+- Docker & Docker Compose (for containerized deployment)
 
 ## Getting Started
 
@@ -80,7 +81,7 @@ A full-stack web application for contact management with role-based access contr
 
 ```bash
 git clone <repository-url>
-cd osmiumenergy
+cd crm
 ```
 
 ### 2. Server Setup
@@ -106,9 +107,9 @@ cp .env.example .env
 Configure environment variables in `.env`:
 
 ```env
-MONGO_URI=mongodb://localhost:27017/osmiumenergy
+MONGO_URI=mongodb://localhost:27017/crm
 # Or use MongoDB Atlas:
-# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/osmiumenergy
+# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/crm
 
 JWT_SECRET=your-secret-key-here
 PORT=3000
@@ -162,10 +163,32 @@ npm run dev
 
 The client will start at `http://localhost:5173` (or next available port).
 
+## Deployment
+
+### Using Docker Compose
+
+The application includes a `docker-compose.yml` for easy deployment.
+
+1.  **Configure Environment**:
+    Create a `.env` file with the required variables (see [Environment Variables](#environment-variables)).
+
+2.  **Start Services**:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+    This will start the client on port 80 and the server (internal).
+
+3.  **Stop Services**:
+    ```bash
+    docker-compose down
+    ```
+
 ## Project Structure
 
 ```
-osmiumenergy/
+crm/
 ├── client/                 # React frontend
 │   ├── src/
 │   │   ├── api/           # API client and endpoints
@@ -343,6 +366,7 @@ The application is fully responsive using Material-UI breakpoints:
 MONGO_URI=<mongodb-connection-string>
 JWT_SECRET=<your-secret-key>
 PORT=3000
+DOCKER_USERNAME=<docker-username> # Required for pulling images specified in docker-compose.yml
 ```
 
 ### Client (.env)
