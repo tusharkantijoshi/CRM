@@ -189,26 +189,36 @@ The application includes a `docker-compose.yml` for easy deployment.
 
 ```
 crm/
-├── client/                 # React frontend
+├── client/                     # React frontend
 │   ├── src/
-│   │   ├── api/           # API client and endpoints
-│   │   ├── components/    # Reusable React components
-│   │   ├── context/       # React Context providers
-│   │   ├── pages/         # Page components
-│   │   ├── types/         # TypeScript type definitions
-│   │   └── theme.ts       # MUI theme configuration
+│   │   ├── api/               # API client and endpoints
+│   │   ├── assets/            # Static assets
+│   │   ├── components/        # Reusable React components
+│   │   ├── context/           # React Context providers
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── pages/             # Page components
+│   │   ├── types/             # TypeScript type definitions
+│   │   └── theme.ts           # MUI theme configuration
+│   ├── Dockerfile
 │   └── package.json
 │
-└── server/                # Express backend
+└── server/                    # Express backend
     ├── db/
-    │   ├── models/        # Mongoose models
-    │   └── connection.js  # MongoDB connection
-    ├── middleware/        # Express middleware
-    ├── modules/           # Feature modules
-    │   └── contacts/      # Contact management
-    ├── routes/            # Route definitions
-    ├── scripts/           # Utility scripts (seed, etc.)
+    │   ├── models/            # Mongoose models
+    │   ├── schemas/           # Reusable schemas
+    │   └── connection.js      # MongoDB connection
+    ├── middleware/            # Express middleware
+    ├── modules/               # Feature modules
+    │   ├── contacts/          # Contact management
+    │   ├── health/            # Health check endpoints
+    │   └── users/             # User management
+    ├── routes/                # Route definitions
+    ├── scripts/               # Utility scripts (seed, etc.)
+    ├── Dockerfile
     └── package.json
+
+├── docker-compose.yml         # Container orchestration
+└── README.md
 ```
 
 ## API Documentation
