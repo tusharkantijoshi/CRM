@@ -50,10 +50,10 @@ A full-stack web application for contact management with role-based access contr
 
 ### Client
 
-- **Framework**: React 18 with TypeScript
+- **Framework**: React 19 with TypeScript
 - **Build Tool**: Vite
-- **UI Library**: Material-UI (MUI)
-- **Routing**: React Router v6
+- **UI Library**: Material-UI (MUI) v7
+- **Routing**: React Router v7
 - **Forms**: React Hook Form + Zod validation
 - **HTTP Client**: Axios
 - **State Management**: React Context API + TanStack Query
@@ -62,7 +62,7 @@ A full-stack web application for contact management with role-based access contr
 ### Server
 
 - **Runtime**: Node.js
-- **Framework**: Express.js
+- **Framework**: Express.js v5
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: JWT + bcryptjs
 - **Security**: Helmet, CORS
