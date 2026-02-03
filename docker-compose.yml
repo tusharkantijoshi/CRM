@@ -1,7 +1,7 @@
 services:
   server:
-    container_name: osmium-backend
-    image: ${DOCKER_USERNAME}/osmium-server:latest
+    container_name: crm-backend
+    image: ${DOCKER_USERNAME}/crm-server:latest
     restart: always
     environment:
       - NODE_ENV=production
@@ -9,19 +9,19 @@ services:
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
     networks:
-      - osmium-network
+      - crm-network
 
   client:
-    container_name: osmium-frontend
-    image: ${DOCKER_USERNAME}/osmium-client:latest
+    container_name: crm-frontend
+    image: ${DOCKER_USERNAME}/crm-client:latest
     restart: always
     ports:
       - "80:80"
     depends_on:
       - server
     networks:
-      - osmium-network
+      - crm-network
 
 networks:
-  osmium-network:
+  crm-network:
     driver: bridge

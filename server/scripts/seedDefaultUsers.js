@@ -19,7 +19,7 @@ const seedDefaultUsers = async () => {
       "$2b$10$XRqD17QwQgk6hAqCg9wZSO4zZHIy8mkWfvJt7XjsDTiKha7l/SjU6";
 
     // Admin user
-    const adminEmail = "admin@osmiumenergy.com";
+    const adminEmail = "admin@crm.com";
     const normalizedAdminEmail = adminEmail.toLowerCase();
 
     const existingAdmin = await User.findOne({ email: normalizedAdminEmail });
@@ -38,7 +38,7 @@ const seedDefaultUsers = async () => {
     }
 
     // Regular user
-    const userEmail = "user@osmiumenergy.com";
+    const userEmail = "user@crm.com";
     const normalizedUserEmail = userEmail.toLowerCase();
 
     const existingUser = await User.findOne({ email: normalizedUserEmail });
